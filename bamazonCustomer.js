@@ -19,6 +19,7 @@ connection.connect(function(err) {
   pullProducts();
 });
 
+// get the list of available products from the database
 function pullProducts() {
   connection.query('SELECT product_name FROM products', (error, result) => {
     if (error) throw error;
@@ -31,6 +32,7 @@ function pullProducts() {
   });
 }
 
+// show the list to the customer and allow them to select a product
 function getCustomerChoice(list) {
   inquirer.prompt([{
     name: 'productChoice',
@@ -43,8 +45,10 @@ function getCustomerChoice(list) {
 }
 
 function findChosenItem(item) {
+  // after customer selects a product, show details of it.
   connection.query('SELECT * FROM products WHERE product_name = "' + item + '"', (error, result) => {
     let prod = result[0];
+    // ask how many they would like to buy
     inquirer.prompt([{
       name: 'purchQuant',
       type: 'input',
@@ -54,6 +58,8 @@ function findChosenItem(item) {
         "How many would you like to purchase?",
       default: 1
     }]).then(answer => {
+      // check requested quantity against available stock
+      // if requested quantity is too high, reduce request and confirm with customer
       if (answer.purchQuant > prod.stock_quantity) {
         answer.purchQuant = prod.stock_quantity;
         inquirer.prompt([{
@@ -64,9 +70,11 @@ function findChosenItem(item) {
             "Is this OK?",
           default: true
         }]).then(answer => {
+          // if customer agrees, complete the transaction, else cancel the transaction
           answer.confirm ? completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, answer.purchQuant, prod.price) : cancelTransaction();
         });
       } else {
+        // if quantity is valid complete the transaction
         completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, answer.purchQuant, prod.price);
       }
     });
@@ -74,6 +82,7 @@ function findChosenItem(item) {
 }
 
 function completeTransaction(id, name, q, p, c) {
+  // show the customer the total cost of the purchase, and confirm with the customer
   inquirer.prompt([{
     name: 'confirm',
     type: 'confirm',
@@ -81,6 +90,7 @@ function completeTransaction(id, name, q, p, c) {
       "Is this OK?",
     default: true
   }]).then(answer => {
+    // if customer confirms, update the database
     if (answer.confirm) {
       let queryString = 'UPDATE products SET stock_quantity = ' + (q - p) + ' WHERE item_id = ' + id
       connection.query(queryString, (error, result) => {
@@ -89,6 +99,7 @@ function completeTransaction(id, name, q, p, c) {
         closeConnection();
       });
     } else {
+      // else cancel the transation
       cancelTransaction()
     }
   });

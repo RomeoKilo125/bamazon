@@ -64,22 +64,34 @@ function findChosenItem(item) {
             "Is this OK?",
           default: true
         }]).then(answer => {
-          answer.confirm ? completeTransaction(prod.item_id, prod.stock_quantity, answer.purchQuant) : cancelTransaction();
+          answer.confirm ? completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, answer.purchQuant, prod.price) : cancelTransaction();
         });
       } else {
-        completeTransaction(prod.item_id, prod.stock_quantity, answer.purchQuant);
+        completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, answer.purchQuant, prod.price);
       }
     });
   });
 }
 
-function completeTransaction(id, q, p) {
-  let queryString = 'UPDATE products SET stock_quantity = ' + (q - p) + ' WHERE item_id = ' + id
-  connection.query(queryString, (error, result) => {
-    if (error) throw error;
-    console.log("Thank you for your purchase!");
+function completeTransaction(id, name, q, p, c) {
+  inquirer.prompt([{
+    name: 'confirm',
+    type: 'confirm',
+    message: "The total cost of your purchase of " + p + " " + name + "s is $" + p * c + ".\n" +
+      "Is this OK?",
+    default: true
+  }]).then(answer => {
+    if (answer.confirm) {
+      let queryString = 'UPDATE products SET stock_quantity = ' + (q - p) + ' WHERE item_id = ' + id
+      connection.query(queryString, (error, result) => {
+        if (error) throw error;
+        console.log("Thank you for your purchase!");
+        closeConnection();
+      });
+    } else {
+      cancelTransaction()
+    }
   });
-  closeConnection();
 }
 
 function cancelTransaction() {

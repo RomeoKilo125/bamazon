@@ -20,18 +20,24 @@ connection.connect(function(err) {
 });
 
 function pullProducts() {
-  connection.query('SELECT product_name, item_id, stock_quantity FROM products', (error, result) => {
+  connection.query('SELECT product_name FROM products', (error, result) => {
     if (error) throw error;
     let productList = [];
     for (product of result) {
       productList.push(product.product_name);
     }
+    productList.push('');
     inquirer.prompt([{
       name: 'productChoice',
-      type: 'rawlist',
+      type: 'list',
       message: "Here's a list of our products. What would you like to purchase?",
       choices: productList
-    }]);
-    connection.end();
-  });
+    }]).then(answer => {
+      console.log(answer);
+    });
+  closeConnection();
+}
+
+function closeConnection() {
+  connection.end();
 }

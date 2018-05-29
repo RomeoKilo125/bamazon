@@ -14,7 +14,8 @@ CREATE TABLE products (
     product_name VARCHAR(45) NOT NULL,
     department_name VARCHAR(45) NOT NULL,
     price DECIMAL(6,2) NOT NULL,
-    stock_quantity INT(11)
+    stock_quantity INT(11),
+		product_sales DECIMAL(8,2) DEFAULT 0.00
 );
 
 INSERT INTO products (product_name, department_name, price, stock_quantity)

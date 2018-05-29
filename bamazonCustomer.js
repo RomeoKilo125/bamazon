@@ -71,17 +71,17 @@ function findChosenItem(item) {
           default: true
         }]).then(answer => {
           // if customer agrees, complete the transaction, else cancel the transaction
-          answer.confirm ? completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, answer.purchQuant, prod.price) : cancelTransaction();
+          answer.confirm ? completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, answer.purchQuant, prod.price, prod.product_sales) : cancelTransaction();
         });
       } else {
         // if quantity is valid complete the transaction
-        completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, answer.purchQuant, prod.price);
+        completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, answer.purchQuant, prod.price, prod.product_sales);
       }
     });
   });
 }
 
-function completeTransaction(id, name, q, p, c) {
+function completeTransaction(id, name, q, p, c, s) {
   // show the customer the total cost of the purchase, and confirm with the customer
   inquirer.prompt([{
     name: 'confirm',
@@ -92,7 +92,7 @@ function completeTransaction(id, name, q, p, c) {
   }]).then(answer => {
     // if customer confirms, update the database
     if (answer.confirm) {
-      let queryString = 'UPDATE products SET stock_quantity = ' + (q - p) + ' WHERE item_id = ' + id
+      let queryString = 'UPDATE products SET stock_quantity = ' + (q - p) + ', product_sales = ' + ( s + p * c) + ' WHERE item_id = ' + id
       connection.query(queryString, (error, result) => {
         if (error) throw error;
         console.log("Thank you for your purchase!");

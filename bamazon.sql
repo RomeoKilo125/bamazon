@@ -27,6 +27,7 @@ INSERT INTO products (product_name, department_name, price, stock_quantity)
             ("Couch, 3-seat", "Furniture", 400, 100),
             ("Stapler", "Office Supplies", 8, 42),
             ("USB-A to Micro USB-B Cable, 2m", "Computer Parts", 20, 624),
-            ("Mini Fridge", "Appliances", 100, 134);
+            ("Mini Fridge", "Appliances", 100, 134),
+            ("Tank Top", "Clothing", 5, 2000);
 
 SELECT * FROM products

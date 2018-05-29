@@ -30,4 +30,21 @@ INSERT INTO products (product_name, department_name, price, stock_quantity)
             ("Mini Fridge", "Appliances", 100, 134),
             ("Tank Top", "Clothing", 5, 2000);
 
+CREATE TABLE departments (
+	department_id INT(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    department_name VARCHAR(45) NOT NULL,
+    over_head_costs DECIMAL(8, 2) NOT NULL
+);
+
+INSERT INTO departments (department_name, over_head_costs)
+	VALUES	("Games", 100),
+			("Coding Tools", 150),
+            ("Psychological Crutches", 100),
+            ("Office Supplies", 200),
+            ("Life Requirements", 100),
+            ("Furniture", 300),
+            ("Appliances", 200),
+            ("Clothing", 50);
+
+
 SELECT * FROM products

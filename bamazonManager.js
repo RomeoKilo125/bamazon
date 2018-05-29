@@ -18,7 +18,7 @@ let connection = mysql.createConnection({
 connection.connect(err => {
   if (err) throw err;
   mainMenu();
-})
+});
 
 // show manager the list of available functions
 // view products, view low Inventory, add to inventory, add new product

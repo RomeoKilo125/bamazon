@@ -158,7 +158,6 @@ function addProduct() {
 // show the results
 function showResults(result) {
   // compile results into table
-  console.log(result);
   let data = [];
   data.push(Object.keys(result[0]));
   for (product of result) {

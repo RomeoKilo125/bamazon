@@ -18,6 +18,9 @@ let connection = mysql.createConnection({
 // connect to database
 connection.connect(error => {
   if (error) throw error;
+  connection.query('SET sql_mode = ""', (err, res) => {
+    if (err) throw error;
+  });
   mainMenu();
 });
 
@@ -49,7 +52,7 @@ function viewSales() {
   let queryString = 'SELECT a.department_id, a.department_name, a.over_head_costs, b.product_sales, (b.product_sales - a.over_head_costs) as total_profit\n' +
     'FROM departments a, products b\n' +
     'WHERE a.department_name = b.department_name\n' +
-    'GROUP BY a.department_id'
+    'GROUP BY a.department_id;'
   // run query
   connection.query(queryString, (error, result) => {
     if (error) throw error;

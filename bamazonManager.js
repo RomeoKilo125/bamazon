@@ -2,6 +2,7 @@
 require('dotenv').config();
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const chalk = require('chalk');
 const {
   table
 } = require('table');
@@ -26,7 +27,7 @@ function mainMenu() {
   inquirer.prompt([{
     name: 'menu',
     type: 'rawlist',
-    message: "What would you like to do?",
+    message: "What would you like to do?\n",
     choices: ["View All Products", "See Low Inventory", "Add to Inventory", "Add New Product", "Exit"]
   }]).then(ans => {
     switch (ans.menu) {
@@ -109,7 +110,7 @@ function adjustInventory() {
           // run query
           connection.query(queryString, (error, result) => {
             if (error) throw error;
-            console.log("Inventory Updated");
+            console.log(chalk.green("Inventory Updated"));
             askQuit();
           });
         });
@@ -152,7 +153,7 @@ function addProduct() {
       parseInt(ans.quantity) + ');';
     // run query
     connection.query(queryString, (error, result) => {
-      console.log("Product Added!");
+      console.log(chalk.green("Product Added!"));
       askQuit();
     });
   });

@@ -2,6 +2,7 @@
 require('dotenv').config();
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const chalk = require('chalk');
 const {
   table
 } = require('table');
@@ -30,7 +31,7 @@ function mainMenu() {
   inquirer.prompt([{
     name: 'menu',
     type: 'rawlist',
-    message: "What would you like to do?",
+    message: "\nWhat would you like to do?",
     choices: ['View Department Sales', 'Create New Department', 'Exit']
   }]).then(ans => {
     switch (ans.menu) {
@@ -71,7 +72,7 @@ function createDept() {
   inquirer.prompt([{
     name: 'deptName',
     type: 'input',
-    message: "What is the department name?"
+    message: "\nWhat is the department name?"
   }, {
     name: 'overhead',
     type: 'input',
@@ -84,7 +85,7 @@ function createDept() {
     // run query
     connection.query(queryString, (error, result) => {
       if (error) throw error;
-      console.log("Department added.");
+      console.log(chalk.green("Department added."));
       askQuit();
     });
   });
@@ -106,7 +107,7 @@ function askQuit() {
   inquirer.prompt([{
     name: 'continue',
     type: 'confirm',
-    message: "Would you like to continue?"
+    message: "\nWould you like to continue?"
   }]).then(ans => {
     if (ans.continue) {
       mainMenu();

@@ -2,6 +2,7 @@
 require('dotenv').config();
 let mysql = require('mysql');
 let inquirer = require('inquirer');
+let chalk = require('chalk');
 
 // create connection to DB
 let connection = mysql.createConnection({
@@ -38,7 +39,7 @@ function getCustomerChoice(list) {
   inquirer.prompt([{
     name: 'productChoice',
     type: 'list',
-    message: "Here's a list of our products. What would you like to purchase?",
+    message: "\nHere's a list of our products. What would you like to purchase?",
     choices: list
   }]).then(answer => {
     findChosenItem(answer.productChoice);
@@ -57,10 +58,10 @@ function findChosenItem(item) {
     inquirer.prompt([{
       name: 'purchQuant',
       type: 'input',
-      message: "You've chosen " + prod.product_name + " ID: " + prod.item_id + "\n" +
-        "Price: $" + prod.price + ".\n" +
-        "There are " + prod.stock_quantity + " available.\n" +
-        "How many would you like to purchase?",
+      message: "\nYou've chosen " + prod.product_name + " ID: " + prod.item_id + "\n" +
+        "\nPrice: $" + prod.price + ".\n" +
+        "\nThere are " + prod.stock_quantity + " available.\n" +
+        "\nHow many would you like to purchase?",
       default: 1
     }]).then(answer => {
       // check requested quantity against available stock
@@ -70,13 +71,13 @@ function findChosenItem(item) {
         inquirer.prompt([{
           name: 'confirm',
           type: 'confirm',
-          message: "I'm sorry, we don't have that many in stock.\n" +
+          message: chalk.yellow("\nI'm sorry, we don't have that many in stock.\n" +
             "Your purchase has been adjusted to the maximum available (" + prod.stock_quantity + ").\n" +
-            "Is this OK?",
+            "Is this OK?"),
           default: true
         }]).then(answer => {
           // if customer agrees, complete the transaction, else cancel the transaction
-          answer.confirm ? completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, answer.purchQuant, prod.price, prod.product_sales) : cancelTransaction();
+          answer.confirm ? completeTransaction(prod.item_id, prod.product_name, prod.stock_quantity, prod.stock_quantity, prod.price, prod.product_sales) : cancelTransaction();
         });
       } else {
         // if quantity is valid complete the transaction
@@ -91,7 +92,7 @@ function completeTransaction(id, name, q, p, c, s) {
   inquirer.prompt([{
     name: 'confirm',
     type: 'confirm',
-    message: "The total cost of your purchase of " + p + " " + name + "s is $" + p * c + ".\n" +
+    message: "\nThe total cost of your purchase of " + p + " " + name + "s is $" + p * c + ".\n" +
       "Is this OK?",
     default: true
   }]).then(answer => {
@@ -100,7 +101,7 @@ function completeTransaction(id, name, q, p, c, s) {
       let queryString = 'UPDATE products SET stock_quantity = ' + (q - p) + ', product_sales = ' + (s + p * c) + ' WHERE item_id = ' + id
       connection.query(queryString, (error, result) => {
         if (error) throw error;
-        console.log("Thank you for your purchase!");
+        console.log(chalk.green("\nThank you for your purchase!\n"));
         askQuit();
       });
     } else {
@@ -111,7 +112,7 @@ function completeTransaction(id, name, q, p, c, s) {
 }
 
 function cancelTransaction() {
-  console.log("We understand. Check back later to see if we have what you're looking for.")
+  console.log("\nWe understand. Check back later to see if we have what you're looking for.")
   askQuit();
 }
 

@@ -22,7 +22,7 @@ connection.connect(function(err) {
 
 // get the list of available products from the database
 function pullProducts() {
-  connection.query('SELECT product_name FROM products', (error, result) => {
+  connection.query('SELECT product_name FROM products WHERE stock_quantity > 0', (error, result) => {
     if (error) throw error;
     let productList = [];
     for (product of result) {

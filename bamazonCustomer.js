@@ -34,6 +34,7 @@ function pullProducts() {
 
 // show the list to the customer and allow them to select a product
 function getCustomerChoice(list) {
+  list.push('Exit');
   inquirer.prompt([{
     name: 'productChoice',
     type: 'list',
@@ -45,6 +46,10 @@ function getCustomerChoice(list) {
 }
 
 function findChosenItem(item) {
+  if (item === 'Exit') {
+    closeConnection();
+    return;
+  }
   // after customer selects a product, show details of it.
   connection.query('SELECT * FROM products WHERE product_name = "' + item + '"', (error, result) => {
     let prod = result[0];
@@ -92,11 +97,11 @@ function completeTransaction(id, name, q, p, c, s) {
   }]).then(answer => {
     // if customer confirms, update the database
     if (answer.confirm) {
-      let queryString = 'UPDATE products SET stock_quantity = ' + (q - p) + ', product_sales = ' + ( s + p * c) + ' WHERE item_id = ' + id
+      let queryString = 'UPDATE products SET stock_quantity = ' + (q - p) + ', product_sales = ' + (s + p * c) + ' WHERE item_id = ' + id
       connection.query(queryString, (error, result) => {
         if (error) throw error;
         console.log("Thank you for your purchase!");
-        closeConnection();
+        askQuit();
       });
     } else {
       // else cancel the transation
@@ -107,7 +112,21 @@ function completeTransaction(id, name, q, p, c, s) {
 
 function cancelTransaction() {
   console.log("We understand. Check back later to see if we have what you're looking for.")
-  closeConnection();
+  askQuit();
+}
+
+function askQuit() {
+  inquirer.prompt([{
+    name: 'continue',
+    type: 'confirm',
+    message: "Would you like to continue?"
+  }]).then(ans => {
+    if (ans.continue) {
+      pullProducts();
+    } else {
+      closeConnection();
+    }
+  });
 }
 
 function closeConnection() {

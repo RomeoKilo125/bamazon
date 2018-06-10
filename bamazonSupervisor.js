@@ -31,7 +31,7 @@ function mainMenu() {
     name: 'menu',
     type: 'rawlist',
     message: "What would you like to do?",
-    choices: ['View Department Sales', 'Create New Department']
+    choices: ['View Department Sales', 'Create New Department', 'Exit']
   }]).then(ans => {
     switch (ans.menu) {
       case 'View Department Sales':
@@ -39,6 +39,9 @@ function mainMenu() {
         break;
       case 'Create New Department':
         createDept();
+        break;
+      case 'Exit':
+        closeConnection();
         break;
       default:
     }
@@ -58,7 +61,7 @@ function viewSales() {
     if (error) throw error;
     // show results
     showResults(result);
-    closeConnection();
+    askQuit();
   });
 }
 
@@ -82,7 +85,7 @@ function createDept() {
     connection.query(queryString, (error, result) => {
       if (error) throw error;
       console.log("Department added.");
-      closeConnection();
+      askQuit();
     });
   });
 }
@@ -97,6 +100,20 @@ function showResults(result) {
   }
   // show list to user
   console.log(table(data));
+}
+
+function askQuit() {
+  inquirer.prompt([{
+    name: 'continue',
+    type: 'confirm',
+    message: "Would you like to continue?"
+  }]).then(ans => {
+    if (ans.continue) {
+      mainMenu();
+    } else {
+      closeConnection();
+    }
+  });
 }
 
 // closeConnection

@@ -27,7 +27,7 @@ function mainMenu() {
     name: 'menu',
     type: 'rawlist',
     message: "What would you like to do?",
-    choices: ["View All Products", "See Low Inventory", "Add to Inventory", "Add New Product"]
+    choices: ["View All Products", "See Low Inventory", "Add to Inventory", "Add New Product", "Exit"]
   }]).then(ans => {
     switch (ans.menu) {
       case 'View All Products':
@@ -37,10 +37,13 @@ function mainMenu() {
         checkLowInventory();
         break;
       case 'Add to Inventory':
-        addInventory();
+        adjustInventory();
         break;
       case 'Add New Product':
-        adjustProduct();
+        addProduct();
+        break;
+      case 'Exit':
+        closeConnection();
         break;
       default:
     }
@@ -55,7 +58,7 @@ function viewProducts() {
   connection.query('SELECT * FROM products', (error, result) => {
     if (error) throw error;
     showResults(result);
-    closeConnection();
+    askQuit();
   });
 }
 
@@ -66,7 +69,7 @@ function checkLowInventory() {
   connection.query('SELECT * FROM products WHERE stock_quantity < 5;', (error, result) => {
     if (error) throw error;
     showResults(result);
-    closeConnection();
+    askQuit();
   });
 }
 
@@ -107,7 +110,7 @@ function adjustInventory() {
           connection.query(queryString, (error, result) => {
             if (error) throw error;
             console.log("Inventory Updated");
-            closeConnection();
+            askQuit();
           });
         });
       });
@@ -150,7 +153,7 @@ function addProduct() {
     // run query
     connection.query(queryString, (error, result) => {
       console.log("Product Added!");
-      closeConnection();
+      askQuit();
     });
   });
 }
@@ -165,6 +168,20 @@ function showResults(result) {
   }
   // show list to user
   console.log(table(data));
+}
+
+function askQuit() {
+  inquirer.prompt([{
+    name: 'continue',
+    type: 'confirm',
+    message: "Would you like to continue?"
+  }]).then(ans => {
+    if (ans.continue) {
+      mainMenu();
+    } else {
+      closeConnection();
+    }
+  });
 }
 
 // closeConnection

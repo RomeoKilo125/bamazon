@@ -2,7 +2,7 @@
 
 Video Demonstration: https://github.com/RomeoKilo125/bamazon/blob/master/Bamazon_Demo.mp4
 
-This is a command line, node, mysql app that demonstrates a the setup of a simple store called Bamazon.
+This is a command line, node, mysql app that demonstrates the setup of a simple store called Bamazon.
 
 The app is really three separate components of a larger whole that all work together.
 
